@@ -3,8 +3,7 @@ import Image from "next/image";
 
 import styles from "@/styles/Home.module.css";
 import { useRouter } from "next/router";
-
-import { BASE_API, BASE_API_KEY, ResponseData } from ".";
+import { BASE_API, BASE_API_KEY, ResponseData } from "@/helpers";
 
 export default function Details({ data }: ResponseData) {
   const router = useRouter();

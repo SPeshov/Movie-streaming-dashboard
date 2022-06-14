@@ -4,43 +4,40 @@ import Image from "next/image";
 import styles from "@/styles/Home.module.css";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Router, { useRouter } from "next/router";
+import { getMovies, groupeByGenre, Movie, ResponseData } from "@/helpers";
+import { DebounceInput } from "react-debounce-input";
 
-export const BASE_API = "https://wookie.codesubmit.io/movies";
-export const BASE_API_KEY = "Wookie2021";
-
-export type Movie = {
-  genres: [string];
-  backdrop: string;
-  title: string;
-  overview: string;
-  id: string;
-  poster: string;
-  imdb_rating: number;
-};
-export type ResponseData = { data: { movies: Movie[] } };
-
-export default function Home({ data }: ResponseData) {
-  console.log(data);
+export default function Home({ data: serverData }: ResponseData) {
+  console.log(serverData);
+  const { query } = useRouter();
+  const search = query.search as string;
 
   const [moviesByGenre, setMoviesByGenre] = useState<{
     [key: string]: Movie[];
-  }>({});
+  }>(groupeByGenre({ movies: serverData.movies }));
 
-  useEffect(() => groupeByGenre({ data }), []);
-
-  // groupe movies by genre
-  const groupeByGenre = ({ data }: ResponseData) => {
-    let moviesByGenre: any = [];
-    data.movies.forEach((movie) => {
-      movie.genres.forEach((genre) => {
-        if (typeof moviesByGenre[genre] === "undefined") {
-          moviesByGenre[genre] = [];
-        }
-        moviesByGenre[genre].push(movie);
-      });
+  const updateQuery = (search: string) => {
+    Router.replace({
+      pathname: "/",
+      query: { search: encodeURI(search) },
     });
-    setMoviesByGenre(moviesByGenre);
   };
+
+  useEffect(() => {
+    const getNewData = async () => {
+      const response = await getMovies({ search });
+      setMoviesByGenre(groupeByGenre({ movies: response.movies }));
+    };
+
+    if (search) {
+      getNewData();
+    }
+
+    if (!search || search.length < 3) {
+      setMoviesByGenre(groupeByGenre({ movies: serverData.movies }));
+    }
+  }, [search]);
 
   return (
     <div className={styles.container}>
@@ -53,6 +50,14 @@ export default function Home({ data }: ResponseData) {
       <main className={styles.main}>
         <div>
           <h1>header</h1>
+          <DebounceInput
+            minLength={2}
+            value={search}
+            className="search"
+            placeholder="Enter something here..."
+            debounceTimeout={500}
+            onChange={(e) => updateQuery(e.target.value)}
+          />
         </div>
         {Object.keys(moviesByGenre).map((genre) => (
           <div key={genre} className={styles.genre_wrapper}>
@@ -88,14 +93,10 @@ export default function Home({ data }: ResponseData) {
   );
 }
 
-export async function getServerSideProps() {
-  const response = await fetch(BASE_API, {
-    method: "get",
-    headers: new Headers({
-      Authorization: `Bearer ${BASE_API_KEY}`,
-    }),
-  });
-  const data = await response.json();
+export async function getServerSideProps({ query }) {
+  const { search } = query;
+
+  const data = await getMovies({ search });
 
   return { props: { data } };
 }
