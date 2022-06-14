@@ -13,6 +13,7 @@ type Movie = {
   title: string;
   overview: string;
   id: string;
+  poster: string;
 };
 type ResponseData = { data: { movies: Movie[] } };
 
@@ -48,28 +49,31 @@ export default function Home({ data }: ResponseData) {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>movies by genre</h1>
+        <div>
+          <h1>header</h1>
+        </div>
         {Object.keys(moviesByGenre).map((genre) => (
-          <div key={genre}>
+          <div key={genre} className={styles.genre_wrapper}>
             <h3>{genre}</h3>
-            <div>
-              <div>
-                {moviesByGenre[genre].map((movie) => (
-                  <div key={movie.id}>
-                    <span> {movie.title}</span>
-                  </div>
-                ))}
-              </div>
+
+            <div className={styles.genre_row}>
+              {moviesByGenre[genre].map((movie) => (
+                <div key={movie.id}>
+                  <Image
+                    src={movie.poster}
+                    alt="Vercel Logo"
+                    width={600}
+                    height={400}
+                    layout="responsive"
+                  />
+                  <span> {movie.title}</span>
+                </div>
+              ))}
             </div>
           </div>
         ))}
+        <footer className={styles.footer}>footer</footer>
       </main>
-
-      <footer className={styles.footer}>
-        <span className={styles.logo}>
-          <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-        </span>
-      </footer>
     </div>
   );
 }

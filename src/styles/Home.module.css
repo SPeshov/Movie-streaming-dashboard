@@ -1,20 +1,14 @@
 .container {
   min-height: 100vh;
-  padding: 0 0.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  padding: 0 2.5rem;
+  display: grid;
+  grid-template-rows: 300px auto 200px;
   height: 100vh;
 }
 
 .main {
-  padding: 5rem 0;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  grid-template-rows: 300px auto 200px
 }
 
 .footer {
@@ -118,4 +112,16 @@
     width: 100%;
     flex-direction: column;
   }
+}
+
+
+.genre_row { 
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)) 188px repeat(3, 200px);
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.genre_wrapper{
+  margin: 20px 0px;
 }
