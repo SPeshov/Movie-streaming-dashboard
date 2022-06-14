@@ -3,19 +3,21 @@ import Image from "next/image";
 
 import styles from "@/styles/Home.module.css";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
-const BASE_API = "https://wookie.codesubmit.io/movies";
-const BASE_API_KEY = "Wookie2021";
+export const BASE_API = "https://wookie.codesubmit.io/movies";
+export const BASE_API_KEY = "Wookie2021";
 
-type Movie = {
+export type Movie = {
   genres: [string];
   backdrop: string;
   title: string;
   overview: string;
   id: string;
   poster: string;
+  imdb_rating: number;
 };
-type ResponseData = { data: { movies: Movie[] } };
+export type ResponseData = { data: { movies: Movie[] } };
 
 export default function Home({ data }: ResponseData) {
   console.log(data);
@@ -58,16 +60,24 @@ export default function Home({ data }: ResponseData) {
 
             <div className={styles.genre_row}>
               {moviesByGenre[genre].map((movie) => (
-                <div key={movie.id}>
-                  <Image
-                    src={movie.poster}
-                    alt="Vercel Logo"
-                    width={600}
-                    height={400}
-                    layout="responsive"
-                  />
-                  <span> {movie.title}</span>
-                </div>
+                <Link
+                  key={movie.id}
+                  href={{
+                    pathname: "/details",
+                    query: { id: movie.id },
+                  }}
+                >
+                  <a className={styles.movie_wrapper}>
+                    <Image
+                      src={movie.poster}
+                      alt="Vercel Logo"
+                      width={600}
+                      height={400}
+                      layout="responsive"
+                    />
+                    <span> {movie.title}</span>
+                  </a>
+                </Link>
               ))}
             </div>
           </div>

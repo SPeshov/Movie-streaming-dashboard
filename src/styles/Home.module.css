@@ -125,3 +125,7 @@
 .genre_wrapper{
   margin: 20px 0px;
 }
+
+.movie_wrapper{
+  cursor: pointer;
+}
