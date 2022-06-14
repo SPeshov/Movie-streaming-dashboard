@@ -2,25 +2,67 @@ import Head from "next/head";
 import Image from "next/image";
 
 import styles from "@/styles/Home.module.css";
+import { useEffect, useState } from "react";
 
 const BASE_API = "https://wookie.codesubmit.io/movies";
 const BASE_API_KEY = "Wookie2021";
 
-export default function Home({ data }: any) {
+type Movie = {
+  genres: [string];
+  backdrop: string;
+  title: string;
+  overview: string;
+  id: string;
+};
+type ResponseData = { data: { movies: Movie[] } };
+
+export default function Home({ data }: ResponseData) {
   console.log(data);
+
+  const [moviesByGenre, setMoviesByGenre] = useState<{
+    [key: string]: Movie[];
+  }>({});
+
+  useEffect(() => groupeByGenre({ data }), []);
+
+  // groupe movies by genre
+  const groupeByGenre = ({ data }: ResponseData) => {
+    let moviesByGenre: any = [];
+    data.movies.forEach((movie) => {
+      movie.genres.forEach((genre) => {
+        if (typeof moviesByGenre[genre] === "undefined") {
+          moviesByGenre[genre] = [];
+        }
+        moviesByGenre[genre].push(movie);
+      });
+    });
+    setMoviesByGenre(moviesByGenre);
+  };
+
   return (
     <div className={styles.container}>
       <Head>
         <title>TypeScript starter for Next.js</title>
-        <meta
-          name="description"
-          content="TypeScript starter for Next.js that includes all you need to build amazing apps"
-        />
+        <meta name="description" content="Wookiea movies rockes" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>{data?.movies?.[0].title}</h1>
+        <h1 className={styles.title}>movies by genre</h1>
+        {Object.keys(moviesByGenre).map((genre) => (
+          <div key={genre}>
+            <h3>{genre}</h3>
+            <div>
+              <div>
+                {moviesByGenre[genre].map((movie) => (
+                  <div key={movie.id}>
+                    <span> {movie.title}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
       </main>
 
       <footer className={styles.footer}>
