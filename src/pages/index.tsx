@@ -7,6 +7,7 @@ import Link from "next/link";
 import Router, { useRouter } from "next/router";
 import { getMovies, groupeByGenre, Movie, ResponseData } from "@/helpers";
 import { DebounceInput } from "react-debounce-input";
+import { ParsedUrlQuery } from "querystring";
 
 export default function Home({ data: serverData }: ResponseData) {
   console.log(serverData);
@@ -93,8 +94,17 @@ export default function Home({ data: serverData }: ResponseData) {
   );
 }
 
-export async function getServerSideProps({ query }) {
-  const { search } = query;
+export async function getServerSideProps({
+  query,
+  res,
+}: {
+  query: ParsedUrlQuery;
+}) {
+  res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=10, stale-while-revalidate=59"
+  );
+  const search = query.search as string;
 
   const data = await getMovies({ search });
 
